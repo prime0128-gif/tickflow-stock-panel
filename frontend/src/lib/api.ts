@@ -227,6 +227,34 @@ export interface KlineRow {
   [key: string]: any
 }
 
+export interface MarketSentimentPoint {
+  date: string
+  avg_price: number | null
+  above_ma5: number | null
+  above_ma10: number | null
+  above_ma20: number | null
+  above_ma50: number | null
+  above_ma120: number | null
+}
+
+export interface MarketSentimentIndustryRow {
+  sw_l2: string
+  stocks: number
+  ma5: number
+  ma10: number
+  ma5_week_change: number | null
+  ma10_week_change: number | null
+}
+
+export interface MarketSentimentDashboard {
+  as_of: string | null
+  breadth: MarketSentimentPoint[]
+  industry: { available: boolean; best: MarketSentimentIndustryRow[]; worst: MarketSentimentIndustryRow[] }
+  watch_sectors: { available: boolean; series: { sector: string; date: string; above_ma5: number }[] }
+  pcr: { available: boolean; series: { date: string; hs300: number; zz500: number; kc50: number }[] }
+  requirements: Record<string, string>
+}
+
 // ===== Watchlist =====
 export interface WatchlistEntry {
   symbol: string
@@ -1586,6 +1614,7 @@ export const api = {
   marketSnapshot: () =>
     request<{ as_of: string | null; rows: MarketSnapshotRow[] }>('/api/screener/market-snapshot'),
   overviewMarket: (asOf?: string) => request<OverviewMarket>(`/api/overview/market${asOf ? `?as_of=${asOf}` : ''}`),
+  marketSentimentDashboard: () => request<MarketSentimentDashboard>('/api/market-sentiment/dashboard'),
 
   // 概念涨幅轮动矩阵: 每列(日期)各自把所有概念按当天涨幅从高到低排序
   rpsRotation: (days: number, kind?: 'concept' | 'industry', level?: number) =>
